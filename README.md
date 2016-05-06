@@ -26,6 +26,7 @@ The following attributes are required for each user:
 
 * username - The user's username.
 * name - The full name of the user (gecos field)
+* hosts - list of role hosts where user will be created, 'all' can be used
 * uid - The numeric user id for the user. This is required for uid consistency
   across systems.
 * password - If a hash is provided then that will be used, but otherwise the
@@ -46,6 +47,7 @@ Example:
     users:
       - username: foo
         name: Foo Barrington
+        hosts: ['all']
         groups: ['wheel','systemd-journal']
         uid: 1001
         ssh_key:
@@ -55,6 +57,19 @@ Example:
       - username: bar
         name: Bar User
         uid: 1002
+
+## Creating users for SSH tunnel
+Sometimes we need to create user which will be used for ssh tunnels only. In this case add option 'tunnel_only' to user arguments, like this:
+
+    users:
+      - username: foo-tun
+        name: Foo Tunnel
+        hosts: ['nat']
+        groups: []
+        uid: 1234
+        tunnel_only: True
+        ssh_key:
+          - "ssh-rsa AAAAA.... foo@machine"
 
 ## Deleting users
 
