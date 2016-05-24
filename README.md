@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/mivok/ansible-users.png)](https://travis-ci.org/mivok/ansible-users)
+[![Circle CI](
+circle-token should be here
+)](https://circleci.com/gh/verygood-ops/ansible-users)
 
 # Users role
 

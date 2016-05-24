@@ -1,33 +1,36 @@
 ---
 
 # It should add a user when given valid metadata
-
 - hosts: test_runners
-  sudo: yes
+  become: yes
 
 # Test fixture data
   vars:
+    groups_to_create:
+      - ansibletestgroup
     users:
       - username: ansibletestuser
-        name: Ansible Users Role Test Fixture Account
-        groups:
-          - 'users'
-          - 'bin'
+        name: Ansible Users Test Role 
+        groups: []
+        hosts: ['all']
         uid: 2222
         ssh_key:
-          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVpUJQCOaPg3p5xro9e+1fkGRWNOGrrExiKMqTE91Fwu349bxfMnMzRS0PAERouR9EEL+Ee4Yzhav/uNc35eCtXzACtluXnAncMrQj6pM3IqASynhvXTygHljmcMbBSDQtLrTZeW+YzIcOgk5UM1yBi26WoUYva2aCr9IRvKdYreAK08OiMdZedpOye0ZdvIYJGcyITwc6YMmrAhP7jZlrk/mDEkf2a4eBp+475o7MJtaC9npqYkToM8vqvx5AGEKqXt7/f1/paOY7KsR+VGPQy6k2RkXjWBsXPesZ3d3XLZHE60wAk0EsuJO8A25+uWSB6ILQeRSYYmGea/WIf6kd noone@throwaway.example.com"
+          - 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDD0i3Ren2/QZzIpQnikbPyGoCVKbiPeRfC93qn6plWlF/E3o0Gf4/LkLMsPT6/tosMYSWQTEg2DiTSkym2rpd4kOpS2Z/XbydTo/BoXWTQ55Ji3R3VldLStn8BYTl5+9MDUlpMWEHWi8TYSLvvNjUyjF77LtJR4qPHotQl5PpZDzbnnL9h0eti7JSUO5JUsKpzoTLxHIAn3BzsbJkSbFXqFWfZS/w5JhoZFj1cfP60NJ8OMWRM2zEj79nM4nel8RmDT3THBaFYWKkFQQOhR31ZzwURpMNC4X60n6dJhzLpIZyK4bkBYlG+AwYF7zkVEIV5zrH/UeL0Dam81VYmBDhZBC2xF0U5LqW/0tVe56fgSKwfjh9/2TejwVq0WiqHlPv7cbLs0gzgTxN5BvNvIXaSL9cGFzI+bKh6aQOtAfwTfYgMaUdruNWE3r+MpT9ocIYdFbOPQ5vo7ZJw8eC/nwH0ORvgUhYSlZZY7QdoSsIxfCycFqLlojG8XKy7ru2rIg1R86Bwz/7DxrkQVtGEA2LEIRnvBhM5H1pzVT1Nvc/SgyUvKAPfHHzsWZpqcmrxrdFT+IY7JAHvfPVbSEQNYU8Z+aSRjCeOofY7MsBL96cpaYSLko3Ffi/2nXwDp5c00Dh+8iGiwbHilxHVeyOgHTALXRA81Q0LQ14O3pbh1CMgZQ== akhon@samodelkin.net'
 
 # Test setup
   pre_tasks:
-    - include: cleanup.yml
     - name: Add Users Test | Pre-Assertions | Ensure ansibletestuser not already present
-      command: "grep ansibletestuser /etc/passwd /etc/group"
+      command: 'grep ansibletestuser /etc/passwd /etc/group'
       register: ensure_user_not_present
       failed_when: ensure_user_not_present.rc == 0
     - name: Add Users Test | Pre-Assertions | Ensure ansibletestuser home dir not already present
-      command: "ls -d /home/ansibletestuser"
+      command: 'ls -d /home/ansibletestuser'
       register: ensure_home_not_present
       failed_when: ensure_home_not_present.rc == 0
+    - name: Add Group Test | Pre-Assertions | Ensure ansibletestgroup not already present
+      command: 'grep ansibletestgroup /etc/group'
+      register: ensure_group_not_present
+      failed_when: ensure_group_not_present.rc == 0
 
 # Test run
   roles:
@@ -36,17 +39,16 @@
 # Test verify successful
   tasks:
     - name: Add Users Test | Post-Assertions | Ensure ansibletestuser was created
-      command: "grep ansibletestuser /etc/passwd"
+      command: 'grep ansibletestuser /etc/passwd'
     - name: Add Users Test | Post-Assertions | Ensure ansibletestuser home dir was created
-      command: "ls -d /home/ansibletestuser"
+      command: 'ls -d /home/ansibletestuser'
     - name: Add Users Test | Post-Assertions | Ensure ssh key was added
       command: "sudo grep '{{ users[0].ssh_key[0] }}' /home/ansibletestuser/.ssh/authorized_keys"
     - name: Add Users Test | Post-Assertions | Ensure group was added
-      command: "grep 2222 /etc/group"
-    - name: Add Users Test |  Post-Assertions | Ensure user was added to requested groups
-      command: "grep '^bin.*ansibletestuser' /etc/group"
+      command: 'grep 2222 /etc/group'
+    - name: Add Group Test | Post-Assertions | Ensure group was added
+      command: 'grep ansibletestgroup /etc/group'
 
 # Test tear-down
   post_tasks:
     - include: cleanup.yml
-
