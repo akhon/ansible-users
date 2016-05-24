@@ -1,0 +1,28 @@
+---
+
+# It should delete a user when given valid metadata
+- hosts: test_runners
+  become: yes
+
+# Test fixture data
+  vars:
+    users_deleted:
+      - username: ansibletestuser
+        name: Ansible Users Test Role
+        hosts: ['all']
+        groups: []
+        uid: 2222
+
+# Test run
+  roles:
+    - { role: users }
+
+  tasks:
+    - name: Add Users Test | Pre-Assertions | Ensure ansibletestuser has been removed
+      command: 'grep ansibletestuser /etc/passwd /etc/group'
+      register: ensure_user_not_present
+      failed_when: ensure_user_not_present.rc == 0
+
+# Test tear-down
+  post_tasks:
+    - include: cleanup.yml

@@ -1,49 +1,49 @@
 ---
 - name: Creating groups
-  group: name="{{item}}"
-  with_items: groups_to_create
+  group: name='{{item}}'
+  with_items: '{{groups_to_create}}'
   tags: ['users','groups','configuration']
 
 - name: Per-user group creation
-  group: name="{{item.0.username}}" gid="{{item.0.uid}}"
+  group: name='{{item.0.username}}' gid='{{item.0.uid}}'
   when: users_create_per_user_group and ( item.1 == 'all' or item.1 in group_names )
   with_subelements:
-    - users
+    - '{{users}}'
     - hosts
   tags: ['users','configuration']
 
 - name: User creation
-  user: name="{{item.0.username}}"
-        group="{{item.0.username if users_create_per_user_group
-            else users_group}}"
+  user: name='{{item.0.username}}'
+        group='{{item.0.username if users_create_per_user_group
+            else users_group}}'
         groups="{{item.0.groups | join(',')}}"
         shell={{item.0.shell if item.0.shell is defined else users_default_shell}}
         password="{{item.0.password if item.0.password is defined else '!'}}"
-        comment="{{item.0.name}}"
-        uid="{{item.0.uid}}"
+        comment='{{item.0.name}}'
+        uid='{{item.0.uid}}'
         createhome="{{'yes' if users_create_homedirs else 'no'}}"
         update_password="{{'always' if users_always_update_passwd else 'on_create'}}"
   when: item.1 == 'all' or item.1 in group_names
   with_subelements:
-    - users
+    - '{{users}}'
     - hosts
   tags: ['users','configuration']
 
 - name: SSH keys
-  authorized_key: user="{{item.0.username}}" key="{{item.1}}" key_options="{{ options_tunnel_only if item.0.tunnel_only is defined else '' }}" 
+  authorized_key: user='{{item.0.username}}' key='{{item.1}}' key_options="{{ options_tunnel_only if item.0.tunnel_only is defined else '' }}"
   with_subelements:
-    - users
+    - '{{users}}'
     - ssh_key
   tags: ['users','configuration']
   ignore_errors: yes
 
 - name: Deleted user removal
-  user: name="{{item.username}}" state=absent
-  with_items: users_deleted
+  user: name='{{item.username}}' state=absent
+  with_items: '{{users_deleted}}'
   tags: ['users','configuration']
 
 - name: Deleted per-user group removal
-  group: name="{{item.username}}" state=absent
-  with_items: users_deleted
+  group: name='{{item.username}}' state=absent
+  with_items: '{{users_deleted}}'
   when: users_create_per_user_group
   tags: ['users','configuration']

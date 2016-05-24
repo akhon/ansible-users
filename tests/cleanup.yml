@@ -5,4 +5,3 @@
 
 - name: Cleanup | Remove ansibletestuser home dir
   file: state="absent" path="/home/ansibletestuser"
-
