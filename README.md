@@ -1,8 +1,8 @@
-[![Circle CI](
-circle-token should be here
-)](https://circleci.com/gh/verygood-ops/ansible-users)
+# Ansible Users role
 
-# Users role
+[![Circle CI](
+https://circleci.com/gh/verygood-ops/ansible-users.svg
+)](https://circleci.com/gh/verygood-ops/ansible-users)
 
 Role to manage users on a system.
 
