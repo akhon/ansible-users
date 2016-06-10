@@ -1,6 +1,8 @@
+# Ansible Users role
 
-# Users role
-[![CircleCI](https://circleci.com/gh/verygood-ops/ansible-users.svg?style=svg&circle-token=7f449c2bc90b8ab5c8378803fb212b3dba7908c8)](https://circleci.com/gh/verygood-ops/ansible-users)
+[![Circle CI](
+https://circleci.com/gh/verygood-ops/ansible-users.svg
+)](https://circleci.com/gh/verygood-ops/ansible-users)
 
 Role to manage users on a system.
 
